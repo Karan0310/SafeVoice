@@ -823,8 +823,14 @@ const LandingPage = () => {
               User Portal
             </button>
             <button 
-              onClick={() => setCurrentView('admin-login')}
+              onClick={() => {
+                console.log('🔍 Admin button clicked!');
+                console.log('🎯 Current view before:', currentView);
+                setCurrentView('admin-login');
+                console.log('🎯 Setting view to admin-login');
+              }}
               className="btn btn-primary"
+              style={{ position: 'relative', zIndex: 1000 }}
             >
               Admin Login
             </button>
@@ -2124,6 +2130,7 @@ const UserLoginPage = () => {
 
 // Admin Login Page Component
 const AdminLoginPage = () => {
+  console.log('🎯 AdminLoginPage component rendered!');
   const { setCurrentView, setAdmin, notificationService } = useContext(AppContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -2396,6 +2403,11 @@ const SafeVoiceApp = () => {
     return unsubscribe;
   }, []);
 
+  // Debug currentView changes
+  useEffect(() => {
+    console.log('🎯 currentView changed to:', currentView);
+  }, [currentView]);
+
   // Initialize app with enhanced authentication check
   useEffect(() => {
     const initializeApp = async () => {
@@ -2512,7 +2524,12 @@ const SafeVoiceApp = () => {
         {currentView === 'submit-report' && <ReportSubmissionForm />}
         {currentView === 'track-report' && <ReportTrackingPage />}
         {currentView === 'user-login' && <UserLoginPage />}
-        {currentView === 'admin-login' && <AdminLoginPage />}
+        {currentView === 'admin-login' && (
+          <div>
+            {console.log('🎯 Rendering AdminLoginPage, currentView:', currentView)}
+            <AdminLoginPage />
+          </div>
+        )}
         {currentView === 'user-dashboard' && <UserDashboard />}
         {currentView === 'admin-dashboard' && <AdminDashboard />}
         {currentView === 'department-dashboard' && <DepartmentDashboard />}
