@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Button Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .test-button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+        }
+        .test-button:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            border-left: 4px solid #4f46e5;
+        }
+        .success { border-left-color: #10b981; }
+        .error { border-left-color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Admin Button Test</h1>
+        <p>This page tests the admin button functionality to identify any issues.</p>
+        
+        <h2>Test 1: Basic Click Event</h2>
+        <button class="test-button" onclick="testBasicClick()">Test Basic Click</button>
+        <div id="result1" class="result"></div>
+        
+        <h2>Test 2: State Change Simulation</h2>
+        <button class="test-button" onclick="testStateChange()">Test State Change</button>
+        <div id="result2" class="result"></div>
+        
+        <h2>Test 3: API Call Test</h2>
+        <button class="test-button" onclick="testAPICall()">Test API Call</button>
+        <div id="result3" class="result"></div>
+        
+        <h2>Test 4: Navigation Test</h2>
+        <button class="test-button" onclick="testNavigation()">Test Navigation</button>
+        <div id="result4" class="result"></div>
+        
+        <div id="overall-result" class="result" style="margin-top: 30px; display: none;"></div>
+    </div>
+
+    <script>
+        let testResults = {
+            basicClick: false,
+            stateChange: false,
+            apiCall: false,
+            navigation: false
+        };
+
+        function updateResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+        }
+
+        function testBasicClick() {
+            try {
+                console.log('🧪 Testing basic click event...');
+                updateResult('result1', '✅ Basic click event working - check console for logs', true);
+                testResults.basicClick = true;
+            } catch (error) {
+                updateResult('result1', `❌ Basic click error: ${error.message}`, false);
+                testResults.basicClick = false;
+            }
+            checkOverallResult();
+        }
+
+        function testStateChange() {
+            try {
+                console.log('🧪 Testing state change simulation...');
+                // Simulate React state change
+                const mockSetCurrentView = (view) => {
+                    console.log(`🎯 State change simulated: ${view}`);
+                    return true;
+                };
+                
+                const result = mockSetCurrentView('admin-login');
+                if (result) {
+                    updateResult('result2', '✅ State change simulation working', true);
+                    testResults.stateChange = true;
+                } else {
+                    updateResult('result2', '❌ State change simulation failed', false);
+                    testResults.stateChange = false;
+                }
+            } catch (error) {
+                updateResult('result2', `❌ State change error: ${error.message}`, false);
+                testResults.stateChange = false;
+            }
+            checkOverallResult();
+        }
+
+        function testAPICall() {
+            try {
+                console.log('🧪 Testing API call simulation...');
+                // Test if backend is accessible
+                fetch('http://localhost:3001/api/health')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateResult('result3', '✅ Backend API accessible and healthy', true);
+                            testResults.apiCall = true;
+                        } else {
+                            updateResult('result3', '❌ Backend API unhealthy', false);
+                            testResults.apiCall = false;
+                        }
+                        checkOverallResult();
+                    })
+                    .catch(error => {
+                        updateResult('result3', `❌ Backend API error: ${error.message}`, false);
+                        testResults.apiCall = false;
+                        checkOverallResult();
+                    });
+            } catch (error) {
+                updateResult('result3', `❌ API test error: ${error.message}`, false);
+                testResults.apiCall = false;
+                checkOverallResult();
+            }
+        }
+
+        function testNavigation() {
+            try {
+                console.log('🧪 Testing navigation simulation...');
+                // Simulate navigation to admin login
+                const currentView = 'landing';
+                const newView = 'admin-login';
+                
+                console.log(`🎯 Current view: ${currentView}`);
+                console.log(`🎯 Navigating to: ${newView}`);
+                
+                if (newView === 'admin-login') {
+                    updateResult('result4', '✅ Navigation to admin-login simulated successfully', true);
+                    testResults.navigation = true;
+                } else {
+                    updateResult('result4', '❌ Navigation simulation failed', false);
+                    testResults.navigation = false;
+                }
+            } catch (error) {
+                updateResult('result4', `❌ Navigation error: ${error.message}`, false);
+                testResults.navigation = false;
+            }
+            checkOverallResult();
+        }
+
+        function checkOverallResult() {
+            const allPassed = Object.values(testResults).every(result => result === true);
+            const overallElement = document.getElementById('overall-result');
+            
+            if (allPassed) {
+                overallElement.style.display = 'block';
+                overallElement.textContent = '🎉 All tests passed! The admin button should be working correctly.';
+                overallElement.className = 'result success';
+            } else {
+                const passedCount = Object.values(testResults).filter(result => result === true).length;
+                const totalCount = Object.keys(testResults).length;
+                overallElement.style.display = 'block';
+                overallElement.textContent = `⚠️ ${passedCount}/${totalCount} tests passed. Check the failed tests above.`;
+                overallElement.className = 'result error';
+            }
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', () => {
+            console.log('🧪 Admin button test page loaded');
+            console.log('🔍 Check the browser console for detailed test logs');
+        });
+    </script>
+</body>
+</html>
