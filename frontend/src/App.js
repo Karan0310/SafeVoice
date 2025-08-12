@@ -830,9 +830,25 @@ const LandingPage = () => {
                 console.log('🎯 Setting view to admin-login');
               }}
               className="btn btn-primary"
-              style={{ position: 'relative', zIndex: 1000 }}
+              style={{ 
+                position: 'relative', 
+                zIndex: 1000,
+                fontSize: '16px',
+                padding: '12px 24px',
+                fontWeight: '600',
+                boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.4)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 20px 0 rgba(79, 70, 229, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 14px 0 rgba(79, 70, 229, 0.4)';
+              }}
             >
-              Admin Login
+              🔐 Admin Login
             </button>
           </nav>
         </div>
@@ -2128,6 +2144,193 @@ const UserLoginPage = () => {
   );
 };
 
+// Secure Messaging Interface Component
+const SecureMessagingInterface = () => {
+  const { admin, user, setCurrentView } = useContext(AppContext);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [selectedRecipient, setSelectedRecipient] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Load messages when component mounts
+    loadMessages();
+  }, []);
+
+  const loadMessages = async () => {
+    try {
+      setIsLoading(true);
+      // This would call the API to load messages
+      // For now, we'll use mock data
+      const mockMessages = [
+        {
+          id: 1,
+          sender: 'legal_admin',
+          recipient: 'user_123',
+          message: 'Your case has been reviewed. We need additional information.',
+          timestamp: new Date().toISOString(),
+          encrypted: true,
+          read: false
+        },
+        {
+          id: 2,
+          sender: 'user_123',
+          recipient: 'legal_admin',
+          message: 'Thank you for the update. I will provide the information soon.',
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          encrypted: true,
+          read: true
+        }
+      ];
+      setMessages(mockMessages);
+    } catch (error) {
+      setError('Failed to load messages');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !selectedRecipient) {
+      setError('Please enter a message and select a recipient');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const messageData = {
+        sender: admin ? admin.username : user?.anonymous_id,
+        recipient: selectedRecipient,
+        message: newMessage,
+        timestamp: new Date().toISOString(),
+        encrypted: true
+      };
+
+      // This would call the API to send the message
+      // For now, we'll add it to the local state
+      setMessages(prev => [...prev, { ...messageData, id: Date.now() }]);
+      setNewMessage('');
+      setError('');
+    } catch (error) {
+      setError('Failed to send message');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient">
+      {/* Header */}
+      <header className="header">
+        <div className="header-content">
+          <button 
+            onClick={() => setCurrentView('admin-dashboard')}
+            className="btn btn-secondary"
+          >
+            ← Back to Dashboard
+          </button>
+          <h1 className="text-2xl font-bold text-white">Secure Messaging</h1>
+          <div className="w-20"></div> {/* Spacer for centering */}
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Message Composition */}
+          <div className="card mb-6">
+            <h2 className="text-xl font-semibold mb-4">Send Secure Message</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="form-label">Recipient</label>
+                <select 
+                  value={selectedRecipient}
+                  onChange={(e) => setSelectedRecipient(e.target.value)}
+                  className="form-input"
+                >
+                  <option value="">Select recipient...</option>
+                  <option value="user_123">User 123</option>
+                  <option value="user_456">User 456</option>
+                  <option value="legal_admin">Legal Admin</option>
+                  <option value="task_admin">Task Force Admin</option>
+                </select>
+              </div>
+              <div>
+                <label className="form-label">Message</label>
+                <textarea
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type your secure message here..."
+                  className="form-input"
+                  rows={4}
+                />
+              </div>
+              <button 
+                onClick={sendMessage}
+                disabled={isLoading || !newMessage.trim() || !selectedRecipient}
+                className="btn btn-primary"
+              >
+                {isLoading ? 'Sending...' : 'Send Secure Message'}
+              </button>
+            </div>
+          </div>
+
+          {/* Messages List */}
+          <div className="card">
+            <h2 className="text-xl font-semibold mb-4">Message History</h2>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4" />
+                <p>Loading messages...</p>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <MessageCircle className="w-12 h-12 mx-auto mb-4" />
+                <p>No messages yet</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {messages.map((msg) => (
+                  <div 
+                    key={msg.id}
+                    className={`p-4 rounded-lg border ${
+                      msg.sender === (admin?.username || user?.anonymous_id)
+                        ? 'bg-blue-50 border-blue-200 ml-8'
+                        : 'bg-gray-50 border-gray-200 mr-8'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="font-semibold text-sm">
+                        {msg.sender === (admin?.username || user?.anonymous_id) ? 'You' : msg.sender}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(msg.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-gray-800">{msg.message}</p>
+                    <div className="flex items-center mt-2 space-x-2">
+                      {msg.encrypted && (
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                          🔒 Encrypted
+                        </span>
+                      )}
+                      {!msg.read && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          New
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Admin Login Page Component
 const AdminLoginPage = () => {
   console.log('🎯 AdminLoginPage component rendered!');
@@ -2202,23 +2405,24 @@ const AdminLoginPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient flex items-center justify-center">
+      {/* Back Button */}
+      <button 
+        onClick={() => setCurrentView('landing')}
+        className="absolute top-6 left-6 btn btn-secondary"
+        style={{ zIndex: 1000 }}
+      >
+        ← Back to Home
+      </button>
+      
       <div className="container max-w-md">
-        {/* Test Button */}
-        <div className="text-center mb-4">
-          <button 
-            onClick={testButtonClick}
-            className="btn btn-warning mb-4"
-            style={{ fontSize: '14px', padding: '8px 16px' }}
-          >
-            🧪 Test Button - Click Me!
-          </button>
-        </div>
-
         {/* Admin Header */}
         <div className="text-center mb-8">
-          <Settings className="w-16 h-16 text-primary-600 mx-auto mb-4" />
-          <h1 className="hero-title">Admin Portal</h1>
-          <p className="hero-subtitle">Access case management and analytics</p>
+          <div className="admin-icon-container mb-6">
+            <Settings className="w-20 h-20 text-primary-600 mx-auto" />
+            <div className="admin-badge">ADMIN</div>
+          </div>
+          <h1 className="hero-title text-4xl font-bold text-gray-900 mb-3">Admin Portal</h1>
+          <p className="hero-subtitle text-lg text-gray-600">Secure access to case management and analytics</p>
         </div>
 
         {/* Login Form */}
@@ -2287,27 +2491,31 @@ const AdminLoginPage = () => {
           </form>
 
           {/* Demo Accounts */}
-          <div className="demo-section">
-            <h3 className="demo-title">Demo Admin Accounts</h3>
-                          <div className="demo-accounts">
-                <div className="demo-account-item">
-                  <strong>Super Admin:</strong><br />
-                  super_admin / SafeVoice2024!
-                </div>
-                <div className="demo-account-item">
-                  <strong>Legal Team:</strong><br />
-                  legal_admin / SafeVoice2024!
-                </div>
-                <div className="demo-account-item">
-                  <strong>Task Force:</strong><br />
-                  task_admin / SafeVoice2024!
-                </div>
-                <div className="demo-account-item">
-                  <strong>Support:</strong><br />
-                  support_admin / SafeVoice2024!
-                </div>
+          <div className="demo-section mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="demo-title text-lg font-semibold text-gray-700 mb-4">Demo Admin Accounts</h3>
+            <div className="demo-accounts space-y-3">
+              <div className="demo-account-item p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <strong className="text-blue-800">Super Admin:</strong><br />
+                <span className="text-blue-600">super_admin / SafeVoice2024!</span>
+              </div>
+              <div className="demo-account-item p-3 bg-green-50 border border-green-200 rounded-lg">
+                <strong className="text-green-800">Legal Team:</strong><br />
+                <span className="text-green-600">legal_admin / SafeVoice2024!</span>
+              </div>
+              <div className="demo-account-item p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <strong className="text-purple-800">Task Force:</strong><br />
+                <span className="text-purple-600">task_admin / SafeVoice2024!</span>
+              </div>
+              <div className="demo-account-item p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <strong className="text-orange-800">Support:</strong><br />
+                <span className="text-orange-600">support_admin / SafeVoice2024!</span>
+              </div>
+              <div className="demo-account-item p-3 bg-pink-50 border border-pink-200 rounded-lg">
+                <strong className="text-pink-800">Happy2Help:</strong><br />
+                <span className="text-pink-600">happy2help_admin / SafeVoice2024!</span>
               </div>
             </div>
+          </div>
           </div>
 
           <div className="form-actions">
@@ -2532,6 +2740,7 @@ const SafeVoiceApp = () => {
         )}
         {currentView === 'user-dashboard' && <UserDashboard />}
         {currentView === 'admin-dashboard' && <AdminDashboard />}
+        {currentView === 'secure-messaging' && <SecureMessagingInterface />}
         {currentView === 'department-dashboard' && <DepartmentDashboard />}
         {currentView === 'case-management' && <CaseManagement />}
         {currentView === 'case-details' && <CaseDetailsView />}
@@ -4374,7 +4583,14 @@ const AdminDashboard = () => {
             </div>
           </div>
           <div className="admin-nav">
-            <span className="text-sm text-admin-secondary-600">Welcome, {admin?.username}</span>
+            <button 
+              onClick={() => setCurrentView('secure-messaging')}
+              className="admin-btn admin-btn-secondary mr-4"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Secure Messaging
+            </button>
+            <span className="text-sm text-admin-secondary-600 mr-4">Welcome, {admin?.username}</span>
             <button 
               onClick={handleLogout}
               className="admin-btn admin-btn-primary"
