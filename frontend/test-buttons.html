@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { margin: 5px; padding: 10px 20px; font-size: 16px; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Button Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>Admin Login Button Test</h2>
+        <button id="adminLoginBtn" onclick="testAdminLogin()">Admin Login</button>
+        <div id="adminLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>User Logout Button Test</h2>
+        <button id="userLogoutBtn" onclick="testUserLogout()">User Logout</button>
+        <div id="userLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Home Button Test</h2>
+        <button id="homeBtn" onclick="testHomeButton()">Go Home</button>
+        <div id="homeLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Notifications Button Test</h2>
+        <button id="notificationsBtn" onclick="testNotificationsButton()">View Notifications</button>
+        <div id="notificationsLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Case Details Button Test</h2>
+        <button id="caseDetailsBtn" onclick="testCaseDetailsButton()">View Case Details</button>
+        <div id="caseDetailsLog" class="log"></div>
+    </div>
+
+    <script>
+        function logToElement(elementId, message) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            element.innerHTML += `[${timestamp}] ${message}<br>`;
+        }
+
+        function testAdminLogin() {
+            logToElement('adminLog', 'Admin login button clicked!');
+            logToElement('adminLog', 'Testing username/password validation...');
+            
+            // Simulate the validation logic
+            const username = 'test_user';
+            const password = 'test_pass';
+            
+            if (!username.trim() || !password.trim()) {
+                logToElement('adminLog', '❌ Validation failed: missing username or password');
+            } else {
+                logToElement('adminLog', '✅ Validation passed: username and password present');
+                logToElement('adminLog', '🚀 Would call APIService.loginAdmin...');
+            }
+        }
+
+        function testUserLogout() {
+            logToElement('userLog', 'User logout button clicked!');
+            logToElement('userLog', '🚀 Would call APIService.logout...');
+            logToElement('userLog', '🧹 Would clear localStorage...');
+            logToElement('userLog', '🏠 Would navigate to landing page...');
+        }
+
+        function testHomeButton() {
+            logToElement('homeLog', 'Home button clicked!');
+            logToElement('homeLog', '🏠 Would navigate to landing page...');
+        }
+
+        function testNotificationsButton() {
+            logToElement('notificationsLog', 'Notifications button clicked!');
+            logToElement('notificationsLog', '🔔 Would navigate to notifications view...');
+        }
+
+        function testCaseDetailsButton() {
+            logToElement('caseDetailsLog', 'Case details button clicked!');
+            logToElement('caseDetailsLog', '📋 Would load case details...');
+        }
+
+        // Test all buttons on page load
+        window.onload = function() {
+            logToElement('adminLog', '✅ Admin login button test ready');
+            logToElement('userLog', '✅ User logout button test ready');
+            logToElement('homeLog', '✅ Home button test ready');
+            logToElement('notificationsLog', '✅ Notifications button test ready');
+            logToElement('caseDetailsLog', '✅ Case details button test ready');
+        };
+    </script>
+</body>
+</html>

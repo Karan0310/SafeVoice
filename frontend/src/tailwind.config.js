@@ -1,0 +1,47 @@
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        'inter': ['Inter', 'sans-serif'],
+      },
+    },
+  },
+  safelist: [
+    // Explicitly include all color variations we need
+    'bg-blue-50',
+    'bg-blue-100', 
+    'bg-red-50',
+    'bg-red-100',
+    'bg-green-50', 
+    'bg-green-100',
+    'bg-purple-50',
+    'bg-purple-100',
+    'bg-indigo-50',
+    'bg-indigo-100',
+    'border-blue-500',
+    'border-red-500', 
+    'border-green-500',
+    'border-purple-500',
+    'border-indigo-500',
+    'border-l-4',
+    'text-blue-600',
+    'text-blue-700',
+    'text-blue-800',
+    'text-red-600',
+    'text-red-700', 
+    'text-red-800',
+    'text-green-600',
+    'text-green-700',
+    'text-green-800',
+    'text-purple-600',
+    'text-purple-700',
+    'text-purple-800',
+    'text-indigo-600',
+    'text-indigo-700',
+    'text-indigo-800',
+  ],
+  plugins: [],
+}
